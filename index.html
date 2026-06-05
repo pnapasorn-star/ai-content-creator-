@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Creator for Students</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #7F77DD;
+      --purple-light: #EEEDFE;
+      --purple-dark: #3C3489;
+      --teal: #1D9E75;
+      --teal-light: #E1F5EE;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --border: rgba(0,0,0,0.1);
+      --bg: #f8f7ff;
+      --card: #ffffff;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1E1B4B 0%, #4C1D95 100%);
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    header h1 { color: #A78BFA; font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    header p { color: #C4B5FD; font-size: 1rem; margin-top: 0.35rem; }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.12);
+      color: #E9D5FF;
+      font-size: 0.75rem;
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      font-size: 0.875rem;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .tab:hover { border-color: var(--purple); color: var(--purple); }
+    .tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.9375rem;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--text);
+      background: #fafafa;
+      margin-bottom: 1rem;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--purple); background: #fff; }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field-grid .field { margin-bottom: 0; }
+    .field-grid input, .field-grid select { margin-bottom: 0; }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: 'Sarabun', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-top: 0.5rem;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .pill.purple { background: var(--purple-light); color: var(--purple-dark); }
+    .pill.teal { background: var(--teal-light); color: #085041; }
+
+    .prompt-box {
+      background: #1E1B4B;
+      color: #A5B4FC;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 0.8125rem;
+      font-family: 'Courier New', monospace;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .result-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.125rem;
+      font-size: 0.9375rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-family: 'Sarabun', sans-serif;
+      color: var(--purple);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .copy-btn:hover { background: var(--purple-light); }
+
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid #e0e0e0;
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 500px) {
+      .field-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">ช่วงที่ 2 · 10.00–11.00 น.</div>
+  <h1>AI Creator for Students</h1>
+  <p>เปลี่ยนไอเดียให้เป็นผลงานด้วย Generative AI</p>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-type="caption">Instagram Caption</button>
+    <button class="tab" data-type="script">YouTube Script</button>
+    <button class="tab" data-type="article">บทความ Blog</button>
+    <button class="tab" data-type="infographic">Infographic</button>
+    <button class="tab" data-type="pitch">Pitch Deck</button>
+  </div>
+
+  <div class="card" id="input-card"></div>
+
+  <div class="card hidden" id="prompt-card">
+    <div class="section-label">
+      <span class="pill purple">💡 Prompt ที่ใช้</span>
+    </div>
+    <div class="prompt-box" id="prompt-display"></div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span id="loading-text">กำลังสร้างคอนเทนต์...</span>
+  </div>
+
+  <div class="card hidden" id="result-card">
+    <div class="section-label">
+      <span class="pill teal">✨ ผลลัพธ์จาก AI</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyResult()">คัดลอก</button>
+    </div>
+    <div class="result-box" id="result-display"></div>
+  </div>
+</main>
+
+<footer>สร้างด้วย Claude AI · อาจารย์ ดร.ณภธร เผ่ากล้า</footer>
+
+<script>
+const TYPES = {
+  caption: {
+    render: () => `
+      <label>ภาพ / เรื่องที่ต้องการโพสต์</label>
+      <input type="text" id="f-subject" placeholder="เช่น รูปถ่ายในคาเฟ่ญี่ปุ่น สไตล์ minimal">
+      <div class="field-grid">
+        <div class="field">
+          <label>สไตล์</label>
+          <select id="f-style">
+            <option>minimalist</option><option>สนุกสนาน</option>
+            <option>inspirational</option><option>professional</option><option>cute</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>จำนวน hashtag</label>
+          <select id="f-hashtag"><option>3 อัน</option><option>5 อัน</option><option>10 อัน</option></select>
+        </div>
+      </div>`,
+    prompt: () => {
+      const s = v("f-subject"), st = v("f-style"), h = v("f-hashtag");
+      if (!s) return null;
+      return `เขียน Instagram caption สำหรับรูป: "${s}"\nสไตล์: ${st}\nไม่เกิน 3 บรรทัด พร้อม hashtag ${h}\nเขียนเป็นภาษาไทย ห้ามใส่ markdown`;
+    }
+  },
+  script: {
+    render: () => `
+      <label>หัวข้อ Video</label>
+      <input type="text" id="f-topic" placeholder="เช่น เทคนิคอ่านหนังสือให้จำได้นาน">
+      <div class="field-grid">
+        <div class="field">
+          <label>ความยาว intro</label>
+          <select id="f-dur"><option>15 วินาที</option><option>30 วินาที</option><option>60 วินาที</option></select>
+        </div>
+        <div class="field">
+          <label>โทนเสียง</label>
+          <select id="f-tone"><option>สนุก energetic</option><option>เป็นกันเอง</option><option>จริงจัง professional</option><option>ให้แรงบันดาลใจ</option></select>
+        </div>
+      </div>`,
+    prompt: () => {
+      const t = v("f-topic");
+      if (!t) return null;
+      return `เขียน YouTube intro script ความยาว ${v("f-dur")} สำหรับหัวข้อ: "${t}"\nโทน: ${v("f-tone")}\nให้น่าติดตาม ดึงดูดคนดูตั้งแต่ต้น เขียนเป็นภาษาไทย ห้ามใส่ markdown`;
+    }
+  },
+  article: {
+    render: () => `
+      <label>หัวข้อบทความ</label>
+      <input type="text" id="f-topic" placeholder="เช่น 5 เครื่องมือ AI ที่นักศึกษาต้องรู้">
+      <div class="field-grid">
+        <div class="field">
+          <label>กลุ่มเป้าหมาย</label>
+          <input type="text" id="f-audience" placeholder="เช่น นักศึกษา ม.ปลาย">
+        </div>
+        <div class="field">
+          <label>ความยาว</label>
+          <select id="f-len"><option>intro 1 ย่อหน้า</option><option>short post 3 ย่อหน้า</option></select>
+        </div>
+      </div>`,
+    prompt: () => {
+      const t = v("f-topic");
+      if (!t) return null;
+      return `เขียนบทความ blog แบบ ${v("f-len")} เรื่อง: "${t}"\nกลุ่มเป้าหมาย: ${v("f-audience") || "ทั่วไป"}\nภาษาง่าย อ่านสนุก ห้ามใช้ markdown เขียนเป็นภาษาไทย`;
+    }
+  },
+  infographic: {
+    render: () => `
+      <label>หัวข้อ Infographic</label>
+      <input type="text" id="f-topic" placeholder="เช่น ขั้นตอนสมัคร scholarship">
+      <label>จำนวนประเด็นหลัก</label>
+      <select id="f-pts"><option>3 ข้อ</option><option>5 ข้อ</option><option>7 ข้อ</option></select>`,
+    prompt: () => {
+      const t = v("f-topic");
+      if (!t) return null;
+      return `สร้างเนื้อหา infographic เรื่อง: "${t}"\nแบ่งเป็น ${v("f-pts")} แต่ละข้อมีหัวข้อสั้น + คำอธิบาย 1 ประโยค\nเขียนเป็นภาษาไทย ห้ามใส่ markdown`;
+    }
+  },
+  pitch: {
+    render: () => `
+      <label>ชื่อโครงงาน / ไอเดีย</label>
+      <input type="text" id="f-project" placeholder="เช่น แอปจับคู่อาจารย์ที่ปรึกษา">
+      <label>ปัญหาที่แก้ไข</label>
+      <input type="text" id="f-problem" placeholder="เช่น นักศึกษาหาที่ปรึกษายาก">
+      <label>เวลา pitch</label>
+      <select id="f-dur"><option>30 วินาที (elevator pitch)</option><option>2 นาที</option><option>5 นาที</option></select>`,
+    prompt: () => {
+      const p = v("f-project"), pr = v("f-problem");
+      if (!p) return null;
+      return `เขียน pitch script ${v("f-dur")} สำหรับโครงงาน: "${p}"\nปัญหาที่แก้: ${pr || "-"}\nโครงสร้าง: hook → ปัญหา → วิธีแก้ → call to action\nเขียนเป็นภาษาไทย ห้ามใส่ markdown`;
+    }
+  }
+};
+
+let currentType = "caption";
+
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+function renderInputs() {
+  const cfg = TYPES[currentType];
+  document.getElementById("input-card").innerHTML =
+    cfg.render() + `<button class="btn" id="gen-btn" onclick="generate()">✨ สร้างคอนเทนต์</button>`;
+  document.getElementById("prompt-card").classList.add("hidden");
+  document.getElementById("result-card").classList.add("hidden");
+  document.getElementById("loading").style.display = "none";
+}
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const btn = e.target.closest(".tab");
+  if (!btn) return;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  currentType = btn.dataset.type;
+  renderInputs();
+});
+
+const loadingMsgs = ["กำลังคิด...", "กำลังสร้างคอนเทนต์...", "เกือบเสร็จแล้ว..."];
+
+async function generate() {
+  const cfg = TYPES[currentType];
+  const prompt = cfg.prompt();
+  if (!prompt) {
+    document.querySelector("input[type=text]")?.focus();
+    return;
+  }
+
+  document.getElementById("prompt-display").textContent = prompt;
+  document.getElementById("prompt-card").classList.remove("hidden");
+  document.getElementById("result-card").classList.add("hidden");
+
+  const loadEl = document.getElementById("loading");
+  loadEl.style.display = "flex";
+  document.getElementById("gen-btn").disabled = true;
+
+  let li = 0;
+  const lt = setInterval(() => {
+    document.getElementById("loading-text").textContent = loadingMsgs[li++ % loadingMsgs.length];
+  }, 1800);
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || "").join("") || "เกิดข้อผิดพลาด กรุณาลองใหม่";
+    document.getElementById("result-display").textContent = text;
+    document.getElementById("result-card").classList.remove("hidden");
+  } catch (e) {
+    document.getElementById("result-display").textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่";
+    document.getElementById("result-card").classList.remove("hidden");
+  }
+
+  clearInterval(lt);
+  loadEl.style.display = "none";
+  document.getElementById("gen-btn").disabled = false;
+  document.getElementById("result-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function copyResult() {
+  const text = document.getElementById("result-display").textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copy-btn");
+    btn.textContent = "✓ คัดลอกแล้ว";
+    setTimeout(() => { btn.textContent = "คัดลอก"; }, 2000);
+  });
+}
+
+renderInputs();
+</script>
+</body>
+</html>
